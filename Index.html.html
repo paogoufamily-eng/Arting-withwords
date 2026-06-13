@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arting with Words</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F9F8F6;
+    --ink: #1A1A18;
+    --muted: #8A8A86;
+    --line: #E2E0DB;
+    --accent: #1A1A18;
+    --white: #FFFFFF;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 2.5rem 4rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .site-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 0.04em;
+  }
+
+  .site-name span {
+    font-style: italic;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .instagram-link {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .instagram-link:hover { color: var(--ink); }
+
+  #admin-toggle-btn {
+    background: none;
+    border: 1px solid var(--line);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.45rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #admin-toggle-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 6rem 4rem 4rem;
+    max-width: 680px;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 6vw, 4.2rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-title em {
+    font-style: italic;
+  }
+
+  /* ── ADMIN PANEL ── */
+  #admin-panel {
+    display: none;
+    background: var(--white);
+    border: 1px solid var(--line);
+    margin: 0 4rem 3rem;
+    padding: 2.5rem;
+  }
+
+  #admin-panel h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .admin-form {
+    display: grid;
+    gap: 1.2rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .form-group label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .form-group input,
+  .form-group textarea {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--ink);
+    padding: 0.75rem 1rem;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus { border-color: var(--ink); }
+
+  .form-group textarea { min-height: 160px; line-height: 1.8; }
+
+  /* Image upload */
+  .upload-area {
+    border: 1px dashed var(--line);
+    background: var(--bg);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .upload-area:hover { border-color: var(--muted); }
+
+  .upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  #preview-img {
+    display: none;
+    max-height: 140px;
+    margin: 0.75rem auto 0;
+    object-fit: cover;
+  }
+
+  .admin-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.8rem 2rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.75; }
+
+  .btn-secondary {
+    background: none;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { color: var(--ink); border-color: var(--ink); }
+
+  #save-status {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* ── POEMS GRID ── */
+  .poems-section {
+    padding: 3rem 4rem 6rem;
+  }
+
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+  }
+
+  #poems-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2px;
+  }
+
+  /* ── POEM CARD ── */
+  .poem-card {
+    background: var(--white);
+    cursor: pointer;
+    transition: transform 0.25s ease;
+    position: relative;
+  }
+  .poem-card:hover { transform: translateY(-3px); }
+
+  .poem-card-img {
+    width: 100%;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+    display: block;
+    background: var(--line);
+  }
+
+  .poem-card-img-placeholder {
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .poem-card-img-placeholder span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    color: var(--muted);
+    opacity: 0.3;
+  }
+
+  .poem-card-meta {
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+
+  .poem-card-date {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .poem-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .admin-card-actions {
+    display: none;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    gap: 0.4rem;
+  }
+
+  .admin-mode .admin-card-actions { display: flex; }
+
+  .card-action-btn {
+    background: rgba(255,255,255,0.92);
+    border: 1px solid var(--line);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .card-action-btn:hover { background: var(--ink); color: var(--white); }
+
+  /* ── EMPTY STATE ── */
+  #empty-state {
+    grid-column: 1 / -1;
+    padding: 5rem 0;
+    text-align: center;
+  }
+
+  #empty-state p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  /* ── MODAL (read poem) ── */
+  #poem-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(249,248,246,0.96);
+    overflow-y: auto;
+  }
+
+  .modal-inner {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 5rem 2rem 8rem;
+  }
+
+  .modal-close {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 4rem;
+    transition: color 0.2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .modal-close:hover { color: var(--ink); }
+
+  #modal-img {
+    width: 100%;
+    max-height: 460px;
+    object-fit: cover;
+    display: none;
+    margin-bottom: 2.5rem;
+  }
+
+  #modal-date {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  #modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 2.5rem;
+  }
+
+  #modal-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 300;
+    line-height: 2;
+    white-space: pre-wrap;
+    color: var(--ink);
+  }
+
+  /* ── LOGIN MODAL ── */
+  #login-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(249,248,246,0.97);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-box {
+    background: var(--white);
+    border: 1px solid var(--line);
+    padding: 3rem;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .login-box h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 1.8rem;
+  }
+
+  .login-box input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--ink);
+    padding: 0.75rem 1rem;
+    outline: none;
+    margin-bottom: 1rem;
+    transition: border-color 0.2s;
+  }
+  .login-box input:focus { border-color: var(--ink); }
+
+  .login-error {
+    font-size: 0.72rem;
+    color: #c0392b;
+    margin-bottom: 0.75rem;
+    display: none;
+  }
+
+  .login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .login-cancel {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: color 0.2s;
+  }
+  .login-cancel:hover { color: var(--ink); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    header { padding: 1.5rem 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .hero { padding: 3rem 1.5rem 2rem; }
+    .poems-section { padding: 2rem 1.5rem 4rem; }
+    #admin-panel { margin: 0 1.5rem 2rem; padding: 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+    #poems-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 400px) {
+    #poems-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .poem-card { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="site-name">Arting <span>with</span> Words</div>
+  <div class="header-right">
+    <a class="instagram-link" href="https://instagram.com/arting_withwords" target="_blank">@arting_withwords</a>
+    <button id="admin-toggle-btn" onclick="handleAdminToggle()">Admin</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-eyebrow">A collection of poems</p>
+  <h1 class="hero-title">Words that<br><em>linger.</em></h1>
+</section>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <h2>Add a Poem</h2>
+  <div class="admin-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="poem-title" placeholder="Untitled">
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="poem-date">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Poem</label>
+      <textarea id="poem-body" placeholder="Write your poem here…"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Image (optional)</label>
+      <div class="upload-area" id="upload-area">
+        <input type="file" id="poem-image" accept="image/*" onchange="handleImageSelect(event)">
+        <div class="upload-label">Click to upload an image</div>
+        <img id="preview-img" alt="Preview">
+      </div>
+    </div>
+    <div class="admin-actions">
+      <button class="btn-primary" onclick="addPoem()">Publish Poem</button>
+      <button class="btn-secondary" onclick="clearForm()">Clear</button>
+      <span id="save-status"></span>
+    </div>
+  </div>
+</div>
+
+<!-- POEMS -->
+<section class="poems-section">
+  <p class="section-label">Poems</p>
+  <div id="poems-grid">
+    <div id="empty-state">
+      <p>No poems yet — publish your first one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- POEM MODAL -->
+<div id="poem-modal" onclick="closeModal(event)">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="closePoem()">← Back</button>
+    <img id="modal-img" alt="">
+    <p id="modal-date"></p>
+    <h2 id="modal-title"></h2>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div id="login-modal" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(249,248,246,0.97); display:none; align-items:center; justify-content:center;">
+  <div class="login-box">
+    <h3>Admin access</h3>
+    <input type="password" id="admin-password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <p class="login-error" id="login-error">Incorrect password.</p>
+    <div class="login-actions">
+      <button class="login-cancel" onclick="cancelLogin()">Cancel</button>
+      <button class="btn-primary" onclick="doLogin()">Enter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── STATE ──────────────────────────────────────────────────────────
+  const ADMIN_PASSWORD = 'arting2024'; // Change this to your own password!
+  let isAdmin = false;
+  let editingId = null;
+  let selectedImageData = null;
+  let poems = JSON.parse(localStorage.getItem('aww_poems') || '[]');
+
+  // ── INIT ───────────────────────────────────────────────────────────
+  document.getElementById('poem-date').value = new Date().toISOString().split('T')[0];
+  renderPoems();
+
+  // ── ADMIN ──────────────────────────────────────────────────────────
+  function handleAdminToggle() {
+    if (isAdmin) {
+      logOut();
+    } else {
+      showLogin();
+    }
+  }
+
+  function showLogin() {
+    const m = document.getElementById('login-modal');
+    m.style.display = 'flex';
+    setTimeout(() => document.getElementById('admin-password').focus(), 50);
+  }
+
+  function cancelLogin() {
+    document.getElementById('login-modal').style.display = 'none';
+    document.getElementById('admin-password').value = '';
+    document.getElementById('login-error').style.display = 'none';
+  }
+
+  function doLogin() {
+    const pw = document.getElementById('admin-password').value;
+    if (pw === ADMIN_PASSWORD) {
+      isAdmin = true;
+      document.getElementById('login-modal').style.display = 'none';
+      document.getElementById('admin-password').value = '';
+      document.getElementById('login-error').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      document.getElementById('admin-toggle-btn').textContent = 'Log out';
+      document.body.classList.add('admin-mode');
+      renderPoems();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+
+  function logOut() {
+    isAdmin = false;
+    editingId = null;
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('admin-toggle-btn').textContent = 'Admin';
+    document.body.classList.remove('admin-mode');
+    clearForm();
+    renderPoems();
+  }
+
+  // ── IMAGE ──────────────────────────────────────────────────────────
+  function handleImageSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      selectedImageData = ev.target.result;
+      const preview = document.getElementById('preview-img');
+      preview.src = selectedImageData;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── POEM CRUD ──────────────────────────────────────────────────────
+  function addPoem() {
+    const title = document.getElementById('poem-title').value.trim() || 'Untitled';
+    const date  = document.getElementById('poem-date').value;
+    const body  = document.getElementById('poem-body').value.trim();
+
+    if (!body) { flash('Please write a poem first.'); return; }
+
+    if (editingId) {
+      poems = poems.map(p => p.id === editingId
+        ? { ...p, title, date, body, image: selectedImageData || p.image }
+        : p);
+      editingId = null;
+    } else {
+      poems.unshift({ id: Date.now().toString(), title, date, body, image: selectedImageData || null });
+    }
+
+    save(); clearForm(); renderPoems();
+    flash('Poem published ✓');
+  }
+
+  function deletePoem(id) {
+    if (!confirm('Delete this poem?')) return;
+    poems = poems.filter(p => p.id !== id);
+    save(); renderPoems();
+  }
+
+  function editPoem(id) {
+    const p = poems.find(x => x.id === id);
+    if (!p) return;
+    editingId = id;
+    document.getElementById('poem-title').value = p.title;
+    document.getElementById('poem-date').value   = p.date;
+    document.getElementById('poem-body').value   = p.body;
+    selectedImageData = p.image || null;
+    const preview = document.getElementById('preview-img');
+    if (p.image) { preview.src = p.image; preview.style.display = 'block'; }
+    else { preview.style.display = 'none'; }
+    document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
+    flash('Editing — save when done.');
+  }
+
+  function clearForm() {
+    editingId = null;
+    selectedImageData = null;
+    document.getElementById('poem-title').value = '';
+    document.getElementById('poem-date').value  = new Date().toISOString().split('T')[0];
+    document.getElementById('poem-body').value  = '';
+    document.getElementById('poem-image').value = '';
+    document.getElementById('preview-img').style.display = 'none';
+    document.getElementById('save-status').textContent = '';
+  }
+
+  function save() { localStorage.setItem('aww_poems', JSON.stringify(poems)); }
+
+  function flash(msg) {
+    const el = document.getElementById('save-status');
+    el.textContent = msg;
+    setTimeout(() => el.textContent = '', 3000);
+  }
+
+  // ── RENDER ─────────────────────────────────────────────────────────
+  function renderPoems() {
+    const grid = document.getElementById('poems-grid');
+    const empty = document.getElementById('empty-state');
+
+    if (!poems.length) {
+      empty.style.display = 'block';
+      // Remove all cards
+      [...grid.querySelectorAll('.poem-card')].forEach(c => c.remove());
+      return;
+    }
+    empty.style.display = 'none';
+
+    // Rebuild cards
+    [...grid.querySelectorAll('.poem-card')].forEach(c => c.remove());
+
+    poems.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'poem-card';
+      card.dataset.id = p.id;
+
+      const imgPart = p.image
+        ? `<img class="poem-card-img" src="${p.image}" alt="${esc(p.title)}">`
+        : `<div class="poem-card-img-placeholder"><span>"</span></div>`;
+
+      const dateFmt = p.date ? new Date(p.date + 'T12:00:00').toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '';
+
+      card.innerHTML = `
+        ${imgPart}
+        <div class="poem-card-meta">
+          <p class="poem-card-date">${dateFmt}</p>
+          <h3 class="poem-card-title">${esc(p.title)}</h3>
+        </div>
+        <div class="admin-card-actions">
+          <button class="card-action-btn" onclick="event.stopPropagation();editPoem('${p.id}')">Edit</button>
+          <button class="card-action-btn" onclick="event.stopPropagation();deletePoem('${p.id}')">Delete</button>
+        </div>
+      `;
+
+      card.addEventListener('click', () => openPoem(p.id));
+      grid.appendChild(card);
+    });
+  }
+
+  function esc(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── MODAL ──────────────────────────────────────────────────────────
+  function openPoem(id) {
+    const p = poems.find(x => x.id === id);
+    if (!p) return;
+
+    const dateFmt = p.date ? new Date(p.date + 'T12:00:00').toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '';
+
+    document.getElementById('modal-date').textContent  = dateFmt;
+    document.getElementById('modal-title').textContent = p.title;
+    document.getElementById('modal-body').textContent  = p.body;
+
+    const img = document.getElementById('modal-img');
+    if (p.image) { img.src = p.image; img.style.display = 'block'; }
+    else { img.style.display = 'none'; }
+
+    document.getElementById('poem-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePoem() {
+    document.getElementById('poem-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('poem-modal')) closePoem();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePoem();
+  });
+</script>
+</body>
+</html>
